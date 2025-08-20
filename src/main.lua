@@ -1,5 +1,6 @@
 local ubus = require("ubus")
 local uloop = require("uloop")
+local uci = require("uci")
 local json = require("json")
 
 uloop.init()
@@ -9,40 +10,38 @@ if not conn then
     error("Ubus connection failed")
 end
 
-local ovpn_dir = " /var/run/openvpn"
-
-local function get_servers()
-    local servers = {}
-    for file in io.popen('ls -1' .. ovpn_dir):lines() do
-        local s = file:match("^openvpn%-(.+)%.info$")
-        if s then
-            table.insert(servers, s)
-        end
-    end
-    return servers
-end
+local cursor = uci.cursor()
+local slist = {}
+cursor:foreach("openvpn", "openvpn", function(s)
+    table.insert(slist, s[".name"])
+end)
 
 local ovpn_methods = {
     openvpn = {
         fake = {
             function(req)
-            conn:reply(req, {message="hello"});
+                conn:reply(req, {message="hello"})
             end, {id = "fail"}
         },
+        servers = {
+            function(req, msg)
+                conn:reply(req, {message="hello"})
+                print("call to servers")
+            end, {}
+        },
     },
-    servers = {
-        function(req, msg)
-        conn:reply(req, {message="hello"});
-        print("call to servers")
-        end, {id = ubus.INT32, msg = ubus.STRING}
-    }
 }
 
-conn:add(ovpn_methods)
-
-for _, s in ipairs(get_servers()) do
-    local server = ovpn_dir .. "/openvpn-" .. s .. ".status"
-    print("Found server: " .. s)
+for _, server in ipairs(slist) do
+    ovpn_methods["openvpn." .. server] = {
+        clients = {
+            function(req, msg)
+                conn:reply(req, {message="clients not implemented"})
+            end, {}
+        }
+    }
 end
+
+conn:add(ovpn_methods)
 
 uloop.run()
