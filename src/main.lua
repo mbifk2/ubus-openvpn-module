@@ -3,6 +3,9 @@ local uloop = require("uloop")
 local uci = require("uci")
 local json = require("json")
 
+local mgmt = require("management")
+local clients = require("clients")
+
 uloop.init()
 local conn = ubus.connect();
 
@@ -26,7 +29,6 @@ local ovpn_methods = {
         servers = {
             function(req, msg)
                 conn:reply(req, {message="hello"})
-                print("call to servers")
             end, {}
         },
     },
@@ -36,7 +38,14 @@ for _, server in ipairs(slist) do
     ovpn_methods["openvpn." .. server] = {
         clients = {
             function(req, msg)
-                conn:reply(req, {message="clients not implemented"})
+                local data = mgmt.send_cmd("status 2")
+                local clients = clients.parse_client_list(data)
+                conn:reply(req, clients)
+            end, {}
+        },
+        disconnect = {
+            function(req, msg)
+                conn:reply(req, {message="disconnect not implemented"})
             end, {}
         }
     }
