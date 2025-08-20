@@ -1,10 +1,11 @@
+#!/usr/bin/lua
+
 local ubus = require("ubus")
 local uloop = require("uloop")
 local uci = require("uci")
-local json = require("json")
 
-local mgmt = require("management")
-local clients = require("clients")
+local mgmt = require("ubus_openvpn_module.management")
+local clients = require("ubus_openvpn_module.clients")
 
 uloop.init()
 local conn = ubus.connect();

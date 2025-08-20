@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+START=70
+USE_PROCD=1
+
+service_triggers() {
+	procd_add_reload_trigger "ubus_openvpn_module"
+}
+
+start_service() {
+    procd_open_instance
+    procd_set_param command /usr/bin/uovpn.lua
+    procd_set_param respawn
+    procd_close_instance
+}
+
+restart_service() {
+	stop
+	start
+}
