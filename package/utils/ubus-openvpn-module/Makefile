@@ -21,6 +21,10 @@ define Package/ubus-openvpn-module/description
 	Allows you to send commands to OpenVPN instances over ubus
 endef
 
+define Build/Compile
+	true
+endef
+
 define Package/ubus-openvpn-module/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/uovpn.lua $(1)/usr/bin/
