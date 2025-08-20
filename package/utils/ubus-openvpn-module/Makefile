@@ -11,10 +11,10 @@ PKG_SOURCE_VERSION:=27e9fec8dad1933cee69c64e94af76983d9d527c
 include $(INCLUDE_DIR)/package.mk
 
 define Package/ubus-openvpn-module
-  SECTION:=utils
-  CATEGORY:=Utilities
-  TITLE:=OpenVPN module for ubus
-  DEPENDS:=+lua +libubus +libubox +libuci
+	SECTION:=utils
+	CATEGORY:=Utilities
+	TITLE:=OpenVPN module for ubus
+	DEPENDS:=+lua +libubus +libubox +libuci
 endef
 
 define Package/ubus-openvpn-module/description
@@ -22,11 +22,14 @@ define Package/ubus-openvpn-module/description
 endef
 
 define Package/ubus-openvpn-module/install
-  $(INSTALL_DIR) $(1)/usr/bin
-  $(INSTALL_BIN) $(PKG_BUILD_DIR)/uovpn.lua $(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uovpn.lua $(1)/usr/bin/
 
-  $(INSTALL_DIR) $(1)/usr/lib/lua/ubus_openvpn_module
-  $(INSTALL_DATA) $(PKG_BUILD_DIR)/lib/*.lua $(1)/usr/lib/lua/ubus_openvpn_module/
+	$(INSTALL_DIR) $(1)/usr/lib/lua/ubus_openvpn_module
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/lib/*.lua $(1)/usr/lib/lua/ubus_openvpn_module/
+
+	$(INSTALL_DIR) $(1)/etc/init.d
+	$(INSTALL_BIN) ./files/ubus-openvpn-module.init $(1)/etc/init.d/ubus-openvpn-module
 endef
 
 $(eval $(call BuildPackage,ubus-openvpn-module))
