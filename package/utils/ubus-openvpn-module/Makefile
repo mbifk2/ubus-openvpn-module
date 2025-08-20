@@ -23,7 +23,7 @@ endef
 
 define Package/ubus-openvpn-module/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/uovpn.lua $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/uovpn.lua $(1)/usr/bin/
 
 	$(INSTALL_DIR) $(1)/usr/lib/lua/ubus_openvpn_module
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/lib/*.lua $(1)/usr/lib/lua/ubus_openvpn_module/
