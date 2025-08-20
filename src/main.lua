@@ -21,15 +21,26 @@ end)
 
 local ovpn_methods = {
     openvpn = {
-        fake = {
-            function(req)
-                conn:reply(req, {message="hello"})
-            end, {id = "fail"}
-        },
         servers = {
             function(req, msg)
-                conn:reply(req, {message="hello"})
+                for _, s in ipairs(slist) do
+                    conn:reply(req, {name = s})
+                end
             end, {}
+        },
+        disconnect = {
+            function(req, msg)
+                if not msg or not msg.name then
+                    conn:reply(req, {error = "Missing parameter"})
+                    return
+                end
+                local data = mgmt.send_cmd("kill " .. msg.name)
+                if not data then
+                    conn:reply(req, {error = "Failed to disconnect client"})
+                else
+                    conn:reply(req, {message = data})
+                end
+            end, {name = ubus.STRING}
         },
     },
 }
@@ -43,11 +54,6 @@ for _, server in ipairs(slist) do
                 conn:reply(req, clients)
             end, {}
         },
-        disconnect = {
-            function(req, msg)
-                conn:reply(req, {message="disconnect not implemented"})
-            end, {}
-        }
     }
 end
 

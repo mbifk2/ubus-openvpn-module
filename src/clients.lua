@@ -1,5 +1,3 @@
-local json = require("json")
-
 local C = {}
 
 function C.parse_client_list(data)
@@ -16,7 +14,7 @@ function C.parse_client_list(data)
                 virtual_address = fields[4],
                 rx_bytes = tonumber(fields[5]),
                 tx_bytes = tonumber(fields[6]),
-                uptime = os.date("%H:%M:%S", tonumber(fields[9]))
+                uptime = os.date("!%H:%M:%S", os.difftime(os.time(), tonumber(fields[8])))
             }
             clients[fields[2]] = client
         end

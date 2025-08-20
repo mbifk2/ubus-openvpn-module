@@ -3,12 +3,8 @@ local socket = require("socket")
 local M = {}
 
 function M.send_cmd(cmd)
-    local tcp = socket.tcp()
-    tcp:connect("localhost", 7505)
-    if not tcp then
-        error("Failed to connect to server")
-        return
-    end
+    local tcp = assert(socket.tcp())
+    assert(tcp:connect("localhost", 7505))
 
     tcp:send(cmd .. "\n")
     local data = {}
