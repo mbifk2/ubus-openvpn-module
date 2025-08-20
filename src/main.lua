@@ -35,11 +35,7 @@ local ovpn_methods = {
                     return
                 end
                 local data = mgmt.send_cmd("kill " .. msg.name)
-                if not data then
-                    conn:reply(req, {error = "Failed to disconnect client"})
-                else
-                    conn:reply(req, {message = data})
-                end
+                conn:reply(req, {message = data})
             end, {name = ubus.STRING}
         },
     },

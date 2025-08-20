@@ -13,6 +13,10 @@ function M.send_cmd(cmd)
         if not line or line:match("^END") then
             break
         end
+        if line:match("^SUCCESS") or line:match("^ERROR") then
+            data = {line}
+            break
+        end
         table.insert(data, line)
     end
     tcp:close()
