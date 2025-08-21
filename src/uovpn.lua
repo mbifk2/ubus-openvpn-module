@@ -41,13 +41,15 @@ local ovpn_methods = {
     openvpn = {
         servers = {
             function(req, msg)
-                for _, s in ipairs(slist) do
-                    conn:reply(req, {
-                        name = s.name,
-                        management_host = s.mgmt_host,
-                        management_port = s.mgmt_port,
-                    })
-                end
+            local servers = {}
+            for _, s in ipairs(slist) do
+                table.insert(servers, {
+                    name = s.name,
+                    management_host = s.mgmt_host,
+                    management_port = s.mgmt_port,
+                })
+            end
+            conn:reply(req, { servers = servers })
             end, {}
         },
     },
