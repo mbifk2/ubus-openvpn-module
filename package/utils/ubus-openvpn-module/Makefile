@@ -5,8 +5,8 @@ PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=http://84.15.161.187/matbin/ubus-openvpn-module
-PKG_SOURCE_VERSION:=75d3edde1596bc5984180bb99e256855abe6268d
+PKG_SOURCE_URL:=https://github.com/mbifk2/ubus-openvpn-module
+PKG_SOURCE_VERSION:=575a51c4be7383348220bd1f26f25694edb9e92a
 
 include $(INCLUDE_DIR)/package.mk
 
