@@ -50,16 +50,6 @@ local ovpn_methods = {
                 end
             end, {}
         },
-        disconnect = {
-            function(req, msg)
-                if not msg or not msg.name then
-                    conn:reply(req, {error = "Missing parameter"})
-                    return
-                end
-                local data = mgmt.send_cmd("kill " .. msg.name)
-                conn:reply(req, {message = data})
-            end, {name = ubus.STRING}
-        },
     },
 }
 
@@ -71,6 +61,16 @@ for _, server in ipairs(slist) do
                 local clients_list = clients.parse_client_list(data)
                 conn:reply(req, clients_list)
             end, {}
+        },
+        disconnect = {
+            function(req, msg)
+                if not msg or not msg.name then
+                    conn:reply(req, {error = "Missing parameter"})
+                    return
+                end
+                local data = mgmt.send_cmd(server.mgmt_host, server.mgmt_port, "kill " .. msg.name)
+                conn:reply(req, {message = data})
+            end, {name = ubus.STRING}
         },
     }
 end
