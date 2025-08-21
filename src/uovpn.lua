@@ -37,23 +37,7 @@ cursor:foreach("openvpn", "openvpn", function(s)
     end
 end)
 
-local ovpn_methods = {
-    openvpn = {
-        servers = {
-            function(req, msg)
-            local servers = {}
-            for _, s in ipairs(slist) do
-                table.insert(servers, {
-                    name = s.name,
-                    management_host = s.mgmt_host,
-                    management_port = s.mgmt_port,
-                })
-            end
-            conn:reply(req, { servers = servers })
-            end, {}
-        },
-    },
-}
+local ovpn_methods = {}
 
 for _, server in ipairs(slist) do
     ovpn_methods["openvpn." .. server.name] = {
