@@ -19,6 +19,8 @@ This **will not work** if OpenVPN was compiled without the `--enable-management`
 
 Your OpenVPN instances need to have a `management <host> <port>` option in their configuration files.
 
+If you're getting `ECONNREFUSED` with the second instance, make sure OpenVPN traffic through that port is allowed in your firewall configuration.
+
 ## Build
 Desktop Linux:
 
