@@ -67,7 +67,7 @@ for _, server in ipairs(slist) do
     ovpn_methods["openvpn." .. server.name] = {
         clients = {
             function(req, msg)
-                local data = mgmt.send_cmd("status 2")
+                local data = mgmt.send_cmd(server.mgmt_host, server.mgmt_port, "status 2")
                 local clients_list = clients.parse_client_list(data)
                 conn:reply(req, clients_list)
             end, {}

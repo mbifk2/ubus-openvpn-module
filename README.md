@@ -17,7 +17,7 @@ Provided ubus methods:
 ## Important
 This **will not work** if OpenVPN was compiled without the `--enable-management` flag. Make sure the management interface is able to be accessed.
 
-Your OpenVPN instance needs to have the option `management localhost 7505`. Else, the ubus module will not be able to connect.
+Your OpenVPN instances need to have a `management <host> <port>` option in their configuration files.
 
 ## Build
 Desktop Linux:

@@ -2,9 +2,9 @@ local socket = require("socket")
 
 local M = {}
 
-function M.send_cmd(cmd)
+function M.send_cmd(host, port, cmd)
     local tcp = assert(socket.tcp())
-    assert(tcp:connect("localhost", 7505))
+    assert(tcp:connect(host, port))
 
     tcp:send(cmd .. "\n")
     local data = {}
