@@ -7,10 +7,10 @@ Provided ubus methods:
 ```
 'openvpn'
 "servers":{} # lists all instances on the current device
-"disconnect":{"name":"String"} # kills the provided client
 
 'openvpn.<server_name>'
 "clients":{} # lists all clients on the given server along with their addresses, RX/TX bytes and uptime.
+"disconnect":{"name":"String"} # kills the provided client
 
 ```
 
