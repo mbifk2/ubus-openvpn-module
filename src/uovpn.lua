@@ -16,8 +16,25 @@ end
 
 local cursor = uci.cursor()
 local slist = {}
+
 cursor:foreach("openvpn", "openvpn", function(s)
-    table.insert(slist, s[".name"])
+    if s.name then
+        local mgmt_host, mgmt_port
+        if s.extra then
+            for _, line in ipairs(s.extra) do
+                local host, port = line:match("^management%s+(%S+)%s+(%d+)")
+                if host and port then
+                    mgmt_host, mgmt_port = host, tonumber(port)
+                    break
+                end
+            end
+        end
+        table.insert(slist, {
+            name = s.name,
+            mgmt_host = mgmt_host or "localhost",
+            mgmt_port = mgmt_port or 7505,
+        })
+    end
 end)
 
 local ovpn_methods = {
@@ -25,7 +42,11 @@ local ovpn_methods = {
         servers = {
             function(req, msg)
                 for _, s in ipairs(slist) do
-                    conn:reply(req, {name = s})
+                    conn:reply(req, {
+                        name = s.name,
+                        management_host = s.mgmt_host,
+                        management_port = s.mgmt_port,
+                    })
                 end
             end, {}
         },
@@ -43,12 +64,12 @@ local ovpn_methods = {
 }
 
 for _, server in ipairs(slist) do
-    ovpn_methods["openvpn." .. server] = {
+    ovpn_methods["openvpn." .. server.name] = {
         clients = {
             function(req, msg)
                 local data = mgmt.send_cmd("status 2")
-                local clients = clients.parse_client_list(data)
-                conn:reply(req, clients)
+                local clients_list = clients.parse_client_list(data)
+                conn:reply(req, clients_list)
             end, {}
         },
     }
