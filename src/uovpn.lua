@@ -60,22 +60,23 @@ local function parse_client_list(data)
 end
 
 cursor:foreach("openvpn", "openvpn", function(s)
-    if s.name then
+    if s.name and s.extra then
+        if s.enable == "1" then
         local mgmt_host, mgmt_port
-        if s.extra then
-            for _, line in ipairs(s.extra) do
-                local host, port = line:match("^management%s+(%S+)%s+(%d+)")
-                if host and port then
-                    mgmt_host, mgmt_port = host, tonumber(port)
-                    break
-                end
+        for _, line in ipairs(s.extra) do
+            local host, port = line:match("^management%s+(%S+)%s+(%d+)")
+            if host and port then
+                mgmt_host, mgmt_port = host, tonumber(port)
+                break
             end
         end
+
         table.insert(slist, {
             name = s.name,
             mgmt_host = mgmt_host or "localhost",
             mgmt_port = mgmt_port or 7505,
         })
+        end
     end
 end)
 
