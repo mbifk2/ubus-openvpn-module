@@ -21,7 +21,7 @@ local r = h:read("*a")
 h:close()
 
 if r == "" then
-    return
+    os.exit(1)
 end
 
 local function send_cmd(host, port, cmd)
