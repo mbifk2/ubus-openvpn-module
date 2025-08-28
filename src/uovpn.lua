@@ -16,20 +16,24 @@ end
 local cursor = uci.cursor()
 local slist = {}
 
-local h = io.popen("pgrep openvpn")
-local r = h:read("*a")
-h:close()
+local function ovpn_running() 
+    local h = io.popen("pgrep openvpn")
+    local r = h:read("*a")
+    h:close()
 
-if r == "" then
-    os.exit(1)
+    return r ~= ""
+end
+
+local function check_ovpn() 
+    if not ovpn_running() then
+        os.exit(1)
+    end
 end
 
 local function send_cmd(host, port, cmd)
     local tcp = socket.tcp()
     if tcp:connect(host, port) then
         tcp:send(cmd .. "\n")
-    else
-        os.exit(1)
     end
 
     local data = {}
@@ -116,5 +120,7 @@ for _, server in ipairs(slist) do
 end
 
 conn:add(ovpn_methods)
+
+local intv = uloop.interval(check_ovpn, 1000)
 
 uloop.run()
