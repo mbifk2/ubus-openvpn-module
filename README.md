@@ -3,6 +3,8 @@
 
 Allows control of OpenVPN instances through ubus. Runs on OpenWRT.
 
+Restarts on change of the OpenVPN config file. Stops if OpenVPN stops.
+
 Provided ubus methods:
 ```
 'openvpn.<server_name>'
@@ -14,14 +16,20 @@ Provided ubus methods:
 ## Important
 This **will not work** if OpenVPN was compiled without the `--enable-management` flag. Make sure the management interface is able to be accessed.
 
-Your OpenVPN instances need to have a `management <host> <port>` option in their configuration files.
+Your OpenVPN instances need to have a `management <host> <port>` option in an extra section of their UCI configuration files. Like so:
+```
+config openvpn 'inst1'
+    # other options...
+    list extra 'management localhost 7505'
 
-If you're getting `ECONNREFUSED` with the second instance, make sure OpenVPN traffic through that port is allowed in your firewall configuration.
+```
+
+If you're getting `ECONNREFUSED` with subsequent server instances, make sure OpenVPN traffic through that port is allowed in your firewall configuration.
 
 ## Build
-Desktop Linux:
+**Desktop Linux:**
 
-Simply copy everything from the `lib/` directory to `/usr/local/lua/<lua_version>/ubus_openvpn_module`.
+Provided ubus, UCI and OpenVPN are taken care of and working on your system, simply run `uovpn.lua` as root.
 
 OpenWRT:
 
