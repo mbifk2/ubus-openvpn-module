@@ -3,17 +3,33 @@
 START=70
 USE_PROCD=1
 
+check_enabled() {
+	config_get_bool enable "$1" enable 0
+	if [ "$enable" -eq 1 ]; then
+		enabled=1
+	fi
+}
+
 service_triggers() {
 	procd_add_reload_trigger "openvpn"
 }
 
 start_service() {
-    if [ "$(uci show openvpn 2>/dev/null | grep -c '=openvpn')" -eq 0 ]; then
-        return 1
-    fi
+	enabled=0
+	config_load openvpn
+	config_foreach check_enabled openvpn
 
-    procd_open_instance
-    procd_set_param command /usr/bin/uovpn.lua
-    procd_set_param respawn
-    procd_close_instance
+	if [ "$enabled" -ne 1 ]; then
+		return 1
+	fi
+
+	procd_open_instance
+	procd_set_param command /usr/bin/uovpn.lua
+	procd_set_param respawn
+	procd_close_instance
+}
+
+reload_service() {
+    stop
+    start
 }
