@@ -16,11 +16,20 @@ end
 local cursor = uci.cursor()
 local slist = {}
 
-local function send_cmd(host, port, cmd)
-    local tcp = assert(socket.tcp())
-    assert(tcp:connect(host, port))
+local h = io.popen("pgrep openvpn")
+local r = h:read("*a")
+h:close()
 
-    tcp:send(cmd .. "\n")
+if r == "" then
+    return
+end
+
+local function send_cmd(host, port, cmd)
+    local tcp = socket.tcp()
+    if tcp:connect(host, port) then
+        tcp:send(cmd .. "\n")
+    end
+
     local data = {}
     while true do
         local line = tcp:receive()
