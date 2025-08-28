@@ -74,51 +74,59 @@ local function parse_client_list(data)
     return clients
 end
 
-cursor:foreach("openvpn", "openvpn", function(s)
-    if s.name and s.extra then
-        if s.enable == "1" then
-        local mgmt_host, mgmt_port
-        for _, line in ipairs(s.extra) do
-            local host, port = line:match("^management%s+(%S+)%s+(%d+)")
-            if host and port then
-                mgmt_host, mgmt_port = host, tonumber(port)
-                break
+local function build_slist()
+    local servers = {}
+    cursor:foreach("openvpn", "openvpn", function(s)
+        if s.name and s.extra then
+            if s.enable == "1" then
+                local mgmt_host, mgmt_port
+                for _, line in ipairs(s.extra) do
+                    local host, port = line:match("^management%s+(%S+)%s+(%d+)")
+                    if host and port then
+                        mgmt_host, mgmt_port = host, tonumber(port)
+                        break
+                    end
+                end
+
+                table.insert(servers, {
+                    name = s.name,
+                    mgmt_host = mgmt_host or "localhost",
+                    mgmt_port = mgmt_port or 7505,
+                })
             end
         end
-
-        table.insert(slist, {
-            name = s.name,
-            mgmt_host = mgmt_host or "localhost",
-            mgmt_port = mgmt_port or 7505,
-        })
-        end
-    end
-end)
-
-local ovpn_methods = {}
-
-for _, server in ipairs(slist) do
-    ovpn_methods["openvpn." .. server.name] = {
-        clients = {
-            function(req, msg)
-                local data = send_cmd(server.mgmt_host, server.mgmt_port, "status 2")
-                local clients_list = parse_client_list(data)
-                conn:reply(req, clients_list)
-            end, {}
-        },
-        disconnect = {
-            function(req, msg)
-                if not msg or not msg.name then
-                    conn:reply(req, {error = "Missing parameter"})
-                    return
-                end
-                local data = send_cmd(server.mgmt_host, server.mgmt_port, "kill " .. msg.name)
-                conn:reply(req, {message = data})
-            end, {name = ubus.STRING}
-        },
-    }
+    end)
+    return servers
 end
 
+local function build_methods(servers)
+    local methods = {}
+    for _, server in ipairs(servers) do
+        methods["openvpn." .. server.name] = {
+            clients = {
+                function(req, msg)
+                    local data = send_cmd(server.mgmt_host, server.mgmt_port, "status 2")
+                    local clients_list = parse_client_list(data)
+                    conn:reply(req, clients_list)
+                end, {}
+            },
+            disconnect = {
+                function(req, msg)
+                    if not msg or not msg.name then
+                        conn:reply(req, {error = "Missing parameter"})
+                        return
+                    end
+                    local data = send_cmd(server.mgmt_host, server.mgmt_port, "kill " .. msg.name)
+                    conn:reply(req, {message = data})
+                end, {name = ubus.STRING}
+            },
+        }
+    end
+    return methods
+end
+
+slist = build_slist()
+local ovpn_methods = build_methods(slist)
 conn:add(ovpn_methods)
 
 local intv = uloop.interval(check_ovpn, 1000)
