@@ -6,7 +6,7 @@ PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=http://84.15.161.187/matbin/ubus-openvpn-module
-PKG_SOURCE_VERSION:=dd08331d4591ad8b44dcf822fa9040f0cbb84617
+PKG_SOURCE_VERSION:=2eb488e904beb308b51fd2cd5af081392db51032
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -28,9 +28,6 @@ endef
 define Package/ubus-openvpn-module/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/uovpn.lua $(1)/usr/bin/
-
-	$(INSTALL_DIR) $(1)/usr/lib/lua/ubus_openvpn_module
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/lib/*.lua $(1)/usr/lib/lua/ubus_openvpn_module/
 
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) ./files/ubus-openvpn-module.init $(1)/etc/init.d/ubus-openvpn-module
