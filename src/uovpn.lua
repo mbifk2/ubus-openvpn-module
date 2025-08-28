@@ -28,6 +28,8 @@ local function send_cmd(host, port, cmd)
     local tcp = socket.tcp()
     if tcp:connect(host, port) then
         tcp:send(cmd .. "\n")
+    else
+        os.exit(1)
     end
 
     local data = {}
